@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Controle Profissional</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background-color: #6200ee;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.9);
+            position: sticky;
+            top: 0;
+        }
+        
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        
+        .nome-empresa {
+            flex-grow: 1;
+            font-size: 1.5rem;
+        }
+        
+        .btn-logout {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 8px 15px;
+            background-color: #3700b3;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-logout:hover {
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .tabs {
+            margin-bottom: 20px;
+        }
+        
+        .tabs ul {
+            display: flex;
+            list-style: none;
+            gap: 10px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            background-color: #e0e0e0;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background-color: #6200ee;
+            color: white;
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: #d0d0d0;
+        }
+        
+        .content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.9);
+        }
+        
+        .content.show {
+            display: block;
+        }
+        
+        .card {
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            margin-bottom: 15px;
+            color: #6200ee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .btn-primary {
+            background-color: #6200ee;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3700b3;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            color: #6200ee;
+        }
+        
+        .btn-action:hover {
+            color: #3700b3;
+        }
+        
+        .alert {
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .alert.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .alert.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        .status.Pendente {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.Em-Progresso {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .status.Concluída {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .editar-form {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .connection-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .connection-status.online {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .connection-status.offline {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0,0,0,.3);
+            border-radius: 50%;
+            border-top-color: #6200ee;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-container {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab {
+                font-size: 14px;
+                padding: 12px;
+            }
+            
+            th, td {
+                padding: 8px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <img src="./logo.jpg" alt="Logo da Empresa" class="logo">
+        <h1 class="nome-empresa">Sistema BPM Store</h1>
+        <button id="logoutButton" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Sair</button>
+    </header>
+    
+    <div class="container">
+        <!-- Sistema de Abas -->
+        <div class="tabs">
+            <ul>
+                <li id="estoqueTab" class="tab active"><i class="fas fa-box"></i> Estoque</li>
+                <li id="manutencaoTab" class="tab"><i class="fas fa-tools"></i> Manutenção</li>
+                <li id="notasTab" class="tab">
+                    <a href="anotacao.html" style="color: inherit; text-decoration: none;">
+                        <i class="fas fa-tools"></i> Anotações
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Conteúdo Estoque -->
+        <div class="content show" id="estoqueContent">
+            <div class="card">
+                <h2><i class="fas fa-warehouse"></i> Gerenciamento de Estoque</h2>
+                <div id="alert" class="alert"></div>
+                <form id="estoqueForm">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="produto">Nome do Produto:</label>
+                            <input type="text" id="produto" name="produto" placeholder="Nome do Produto" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="quantidade">Quantidade:</label>
+                            <input type="number" id="quantidade" name="quantidade" placeholder="Quantidade" min="0" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="preco">Preço Unitário:</label>
+                            <input type="number" id="preco" name="preco" step="0.01" placeholder="Preço Unitário" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Adicionar Item</button>
+                </form>
+                <div class="table-container">
+                    <table id="estoqueTable">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Quantidade</th>
+                                <th>Preço Unitário</th>
+                                <th>Valor Total</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados dinâmicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Manutenção -->
+        <div class="content" id="manutencaoContent">
+            <div class="card">
+                <h2><i class="fas fa-cogs"></i> Controle de Manutenção</h2>
+                <div id="alertManutencao" class="alert"></div>
+                <form id="manutencaoForm">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="equipamento">Equipamento:</label>
+                            <input type="text" id="equipamento" name="equipamento" placeholder="Equipamento" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="descricao">Descrição do Problema:</label>
+                            <input type="text" id="descricao" name="descricao" placeholder="Descrição do Problema" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="dataEntrada">Data de Entrada:</label>
+                            <input type="date" id="dataEntrada" name="dataEntrada" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="status">Status:</label>
+                            <select id="status" name="status">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em Progresso">Em Progresso</option>
+                                <option value="Concluída">Concluída</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-plus"></i> Adicionar Ordem</button>
+                </form>
+                
+                <!-- Formulário de Edição (inicialmente escondido) -->
+                <form id="editarDescricaoForm" class="editar-form" style="display: none;">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="novaDescricao">Nova Descrição:</label>
+                            <input type="text" id="novaDescricao" name="novaDescricao" placeholder="Nova Descrição" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="novoStatus">Novo Status:</label>
+                            <select id="novoStatus" name="novoStatus">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em Progresso">Em Progresso</option>
+                                <option value="Concluída">Concluída</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary"><i class="fas fa-save"></i> Salvar</button>
+                    <button type="button" id="cancelarEdicao" class="btn-secondary"><i class="fas fa-times"></i> Cancelar</button>
+                </form>
+                
+                <div class="table-container">
+                    <table id="manutencaoTable">
+                        <thead>
+                            <tr>
+                                <th>Equipamento</th>
+                                <th>Descrição</th>
+                                <th>Data Entrada</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Dados dinâmicos -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="connectionStatus" class="connection-status">
+        <i class="fas fa-circle"></i> <span>Conectando...</span>
+    </div>
+
+    <!-- Modal de Carregamento -->
+    <div id="loadingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+            <div class="loading" style="margin: 0 auto 15px;"></div>
+            <p id="loadingText">Carregando...</p>
+        </div>
+    </div>
+
+<script type="module">
+    // Importações do Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+    import { getDatabase, ref, set, push, onValue, remove, update, serverTimestamp, get, onDisconnect } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-database.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCviedXljI4wRv2tI3_kXJb0nFNGf--mj0",
+        authDomain: "app-estoque-manutencao.firebaseapp.com",
+        databaseURL: "https://app-estoque-manutencao-default-rtdb.firebaseio.com",
+        projectId: "app-estoque-manutencao",
+        storageBucket: "app-estoque-manutencao.appspot.com",
+        messagingSenderId: "230174452674",
+        appId: "1:230174452674:web:dc1729702c55d04d3f445b"
+    };
+    
+    // Inicialização do Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+    
+    // Referências do banco de dados
+    const estoqueRef = ref(database, 'estoque');
+    const manutencaoRef = ref(database, 'manutencao');
+
+    // Configuração do status de conexão
+    const connectionStatus = document.getElementById('connectionStatus');
+    const updateConnectionStatus = (isConnected) => {
+        if (isConnected) {
+            connectionStatus.className = 'connection-status online';
+            connectionStatus.innerHTML = '<i class="fas fa-circle"></i> <span>Online - Sincronizado</span>';
+        } else {
+            connectionStatus.className = 'connection-status offline';
+            connectionStatus.innerHTML = '<i class="fas fa-circle"></i> <span>Offline - Modo local</span>';
+        }
+    };
+
+    // Monitorar conexão
+    onValue(ref(database, '.info/connected'), (snapshot) => {
+        updateConnectionStatus(snapshot.val());
+    });
+
+  
+  
+    // Verificação de autenticação
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            initApp();
+        }
+    });
+    
+  
+
+    // Função para mostrar/ocultar loading
+    const showLoading = (message = 'Carregando...') => {
+        document.getElementById('loadingText').textContent = message;
+        document.getElementById('loadingModal').style.display = 'flex';
+    };
+    
+    const hideLoading = () => {
+        document.getElementById('loadingModal').style.display = 'none';
+    };
+
+    // Sistema de abas corrigido
+    function setupTabs() {
+        const tabs = document.querySelectorAll('.tab');
+        const contents = document.querySelectorAll('.content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                // Prevenir comportamento padrão para links
+                if (tab.id === 'notasTab') return;
+                
+                e.preventDefault();
+                
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('show'));
+                
+                tab.classList.add('active');
+                const contentId = tab.id.replace('Tab', 'Content');
+                document.getElementById(contentId).classList.add('show');
+            });
+        });
+    }
+
+    // Logout corrigido
+    document.getElementById('logoutButton').addEventListener('click', async () => {
+        try {
+            showLoading('Saindo...');
+            await signOut(auth);
+            window.location.href = 'login.html';
+        } catch (error) {
+            console.error('Erro ao fazer logout:', error);
+            alert('Erro ao fazer logout. Tente novamente.');
+        } finally {
+            hideLoading();
+        }
+    });
+
+    // Sistema de Estoque corrigido
+    const setupEstoque = () => {
+        const form = document.getElementById('estoqueForm');
+        const tableBody = document.getElementById('estoqueTable').querySelector('tbody');
+        
+        // Listener para dados em tempo real
+        onValue(estoqueRef, (snapshot) => {
+            const data = snapshot.val();
+            renderEstoqueTable(data);
+        });
+
+        // Submit do formulário
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const produto = form.produto.value;
+            const quantidade = parseInt(form.quantidade.value);
+            const preco = parseFloat(form.preco.value);
+            
+            if (!produto || isNaN(quantidade) || isNaN(preco)) {
+                alert('Preencha todos os campos corretamente!');
+                return;
+            }
+            
+            try {
+                showLoading('Salvando item...');
+                const newItemRef = push(estoqueRef);
+                await set(newItemRef, {
+                    produto,
+                    quantidade,
+                    preco,
+                    valorTotal: (quantidade * preco).toFixed(2),
+                    createdAt: serverTimestamp()
+                });
+                form.reset();
+            } catch (error) {
+                console.error('Erro ao salvar item:', error);
+                alert('Erro ao salvar item!');
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Renderização da tabela
+        const renderEstoqueTable = (data) => {
+            if (!data) {
+                tableBody.innerHTML = '<tr><td colspan="5">Nenhum item cadastrado</td></tr>';
+                return;
+            }
+            
+            const items = Object.entries(data).map(([id, item]) => ({ id, ...item }));
+            items.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
+            tableBody.innerHTML = items.map(item => `
+                <tr data-id="${item.id}">
+                    <td>${item.produto}</td>
+                    <td class="quantity-control">
+                        <button class="btn-action btn-decrease">-</button>
+                        <span class="quantidade">${item.quantidade}</span>
+                        <button class="btn-action btn-increase">+</button>
+                    </td>
+                    <td>R$ ${item.preco?.toFixed(2) || '0.00'}</td>
+                    <td>R$ ${item.valorTotal || '0.00'}</td>
+                    <td>
+                        <button class="btn-action btn-delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Adicionar eventos aos botões
+            tableBody.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.closest('tr').dataset.id;
+                    if (confirm('Tem certeza que deseja excluir este item?')) {
+                        try {
+                            showLoading('Excluindo item...');
+                            await remove(ref(database, `estoque/${id}`));
+                        } catch (error) {
+                            console.error('Erro ao excluir item:', error);
+                        } finally {
+                            hideLoading();
+                        }
+                    }
+                });
+            });
+            
+            // Eventos para aumentar/diminuir quantidade
+            tableBody.querySelectorAll('.btn-increase').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+                    const quantidadeElement = row.querySelector('.quantidade');
+                    const novaQuantidade = parseInt(quantidadeElement.textContent) + 1;
+                    
+                    try {
+                        showLoading('Atualizando quantidade...');
+                        const itemRef = ref(database, `estoque/${id}`);
+                        const snapshot = await get(itemRef);
+                        const preco = snapshot.val().preco;
+                        
+                        await update(itemRef, {
+                            quantidade: novaQuantidade,
+                            valorTotal: (novaQuantidade * preco).toFixed(2),
+                            updatedAt: serverTimestamp()
+                        });
+                    } catch (error) {
+                        console.error('Erro ao atualizar quantidade:', error);
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            });
+            
+            tableBody.querySelectorAll('.btn-decrease').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+                    const quantidadeElement = row.querySelector('.quantidade');
+                    const novaQuantidade = parseInt(quantidadeElement.textContent) - 1;
+                    
+                    if (novaQuantidade < 0) {
+                        alert('Quantidade não pode ser menor que zero!');
+                        return;
+                    }
+                    
+                    try {
+                        showLoading('Atualizando quantidade...');
+                        const itemRef = ref(database, `estoque/${id}`);
+                        const snapshot = await get(itemRef);
+                        const preco = snapshot.val().preco;
+                        
+                        await update(itemRef, {
+                            quantidade: novaQuantidade,
+                            valorTotal: (novaQuantidade * preco).toFixed(2),
+                            updatedAt: serverTimestamp()
+                        });
+                    } catch (error) {
+                        console.error('Erro ao atualizar quantidade:', error);
+                    } finally {
+                        hideLoading();
+                    }
+                });
+            });
+        };
+    };
+
+    // Sistema de Manutenção corrigido
+    const setupManutencao = () => {
+        const form = document.getElementById('manutencaoForm');
+        const editForm = document.getElementById('editarDescricaoForm');
+        const tableBody = document.getElementById('manutencaoTable').querySelector('tbody');
+        let editingId = null;
+        
+        // Listener para dados em tempo real
+        onValue(manutencaoRef, (snapshot) => {
+            const data = snapshot.val();
+            renderManutencaoTable(data);
+        });
+
+        // Submit do formulário principal
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const equipamento = form.equipamento.value;
+            const descricao = form.descricao.value;
+            const dataEntrada = form.dataEntrada.value;
+            const status = form.status.value;
+            
+            if (!equipamento || !descricao || !dataEntrada) {
+                alert('Preencha todos os campos obrigatórios!');
+                return;
+            }
+            
+            try {
+                showLoading('Salvando ordem...');
+                const newItemRef = push(manutencaoRef);
+                await set(newItemRef, {
+                    equipamento,
+                    descricao,
+                    dataEntrada,
+                    status,
+                    createdAt: serverTimestamp()
+                });
+                form.reset();
+            } catch (error) {
+                console.error('Erro ao salvar ordem:', error);
+                alert('Erro ao salvar ordem!');
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Submit do formulário de edição
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const novaDescricao = editForm.novaDescricao.value;
+            const novoStatus = editForm.novoStatus.value;
+            
+            if (!novaDescricao) {
+                alert('A descrição não pode estar vazia!');
+                return;
+            }
+            
+            try {
+                showLoading('Atualizando ordem...');
+                await update(ref(database, `manutencao/${editingId}`), {
+                    descricao: novaDescricao,
+                    status: novoStatus,
+                    updatedAt: serverTimestamp()
+                });
+                editForm.style.display = 'none';
+                editingId = null;
+            } catch (error) {
+                console.error('Erro ao atualizar ordem:', error);
+            } finally {
+                hideLoading();
+            }
+        });
+        
+        // Cancelar edição
+        document.getElementById('cancelarEdicao').addEventListener('click', () => {
+            editForm.style.display = 'none';
+            editingId = null;
+        });
+        
+        // Renderização da tabela
+        const renderManutencaoTable = (data) => {
+            if (!data) {
+                tableBody.innerHTML = '<tr><td colspan="5">Nenhuma ordem cadastrada</td></tr>';
+                return;
+            }
+            
+            const ordens = Object.entries(data).map(([id, ordem]) => ({ id, ...ordem }));
+            ordens.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+            
+            tableBody.innerHTML = ordens.map(ordem => `
+                <tr data-id="${ordem.id}">
+                    <td>${ordem.equipamento}</td>
+                    <td>${ordem.descricao}</td>
+                    <td>${ordem.dataEntrada}</td>
+                    <td><span class="status ${ordem.status.replace(' ', '-')}">${ordem.status}</span></td>
+                    <td>
+                        <button class="btn-action btn-edit"><i class="fas fa-edit"></i></button>
+                        <button class="btn-action btn-delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Adicionar eventos aos botões
+            tableBody.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.closest('tr').dataset.id;
+                    if (confirm('Tem certeza que deseja excluir esta ordem?')) {
+                        try {
+                            showLoading('Excluindo ordem...');
+                            await remove(ref(database, `manutencao/${id}`));
+                        } catch (error) {
+                            console.error('Erro ao excluir ordem:', error);
+                        } finally {
+                            hideLoading();
+                        }
+                    }
+                });
+            });
+            
+            tableBody.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.closest('tr').dataset.id;
+                    const ordem = ordens.find(o => o.id === id);
+                    if (ordem) {
+                        editingId = id;
+                        editForm.novaDescricao.value = ordem.descricao;
+                        editForm.novoStatus.value = ordem.status;
+                        editForm.style.display = 'block';
+                        editForm.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            });
+        };
+    };
+
+    // Inicialização do aplicativo
+    const initApp = () => {
+        setupTabs();
+        setupEstoque();
+        setupManutencao();
+        
+        // Configurar data atual no formulário de manutenção
+        document.getElementById('dataEntrada').value = new Date().toISOString().split('T')[0];
+        
+        // Configurar tab de anotações para abrir em nova aba
+        document.getElementById('notasTab').addEventListener('click', (e) => {
+            e.preventDefault();
+            window.open('anotacao.html', '_blank');
+        });
+    };
+</script>
+</body>
+</html>

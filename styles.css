@@ -1,0 +1,415 @@
+:root {
+    --primary-color: #2c3e50; /* Azul escuro */
+    --secondary-color: #3498db; /* Azul claro */
+    --success-color: #27ae60; /* Verde */
+    --warning-color: #f1c40f; /* Amarelo */
+    --danger-color: #e74c3c; /* Vermelho */
+    --light-color: #ecf0f1; /* Cinza claro */
+    --dark-color: #2c3e50; /* Azul escuro */
+    --background-color: #f8f9fa; /* Fundo claro */
+    --shadow-color: rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--dark-color);
+    line-height: 1.6;
+    background-image: url('https://st.depositphotos.com/1035886/2404/v/450/depositphotos_24049059-stock-illustration-internet-doodle.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
+}
+.btn-logout {
+    background: none;
+    border: none;
+    color: black;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: auto;
+    padding: 10px;
+}
+
+.btn-logout:hover {
+    opacity: 0.8;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.5); /* Fundo semi-transparente */
+    backdrop-filter: blur(8px); /* Desfoque */
+    z-index: -1; /* Coloca atrás do conteúdo */
+}
+
+/* Fallback para navegadores que não suportam backdrop-filter */
+@supports not (backdrop-filter: blur(8px)) {
+    body::before {
+        background: rgba(255, 255, 255, 0.7); /* Fundo mais opaco */
+        filter: blur(8px); /* Aplica o desfoque */
+    }
+}
+
+body > * {
+    position: relative;
+    z-index: 1; /* Garante que o conteúdo fique acima da camada de desfoque */
+}
+
+/* Estilos para o header */
+.header {
+    text-align: center;
+    padding: 1px;
+    background-color: var(--light-color);
+    background-image: url('https://st.depositphotos.com/1035886/2404/v/450/depositphotos_24049059-stock-illustration-internet-doodle.jpg');
+    background: rgba(255, 255, 255, 0.5); /* Fundo semi-transparente */
+    color: var(--primary-color);
+    box-shadow: 0 2px 10px var(--shadow-color);
+}
+
+/* Estilos para o logo */
+.logo {
+    width: 120px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    box-shadow: 0 4px 10px var(--shadow-color);
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05); /* Efeito de zoom ao passar o mouse */
+}
+.nome-empresa {
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    color: white; /* Texto branco */
+    padding: 15px 30px; /* Espaçamento interno */
+    
+    display: inline-block; /* Ocupa apenas o espaço necessário */
+    text-shadow: 2px 3px 4px rgba(0, 0, 0, 0.9); /* Sombra no texto */
+    transition: all 0.3s ease; /* Transição suave */
+    position: relative;
+    overflow: hidden;
+}
+
+.nome-empresa::before {
+    content: '🛠️'; /* Ícone de ferramenta */
+    position: absolute;
+    left: 1px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 32px; /* Aumentei o tamanho do ícone */
+    opacity: 0.6; /* Aumentei a opacidade para destacar mais */
+    color: black; /* Adicionei cor para garantir visibilidade */
+    transition: opacity 0.3s ease; /* Adicionei uma transição suave */
+}
+
+.nome-empresa:hover::before {
+    opacity: 1; /* Aumenta a opacidade ao passar o mouse */
+}
+
+.nome-empresa:hover {
+    transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3), 0 2px 30px rgba(0, 0, 0, 0.9); /* Sombra mais intensa */
+    border-color: black; /* Borda mais clara ao passar o mouse */
+}
+
+.nome-empresa:active {
+    transform: translateY(0); /* Efeito de clique */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.9), 0 5px 30px rgba(0, 0, 0, 0.9); /* Sombra mais suave ao clicar */
+}
+
+/* Esconde todos os conteúdos por padrão */
+.content {
+    display: none;
+}
+
+/* Exibe apenas o conteúdo da aba ativa */
+.content.show {
+    display: block;
+}
+
+/* Status */
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 0 15px;
+}
+
+.tabs {
+    background: #fff;
+    border-radius: 0px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.tabs ul {
+    display: flex;
+    list-style: none;
+    background: var(--primary-color);
+    border-radius: 8px 8px 0 0;
+}
+
+/* Estilo base para as abas */
+.tab {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background-color: #f0f0f0; /* Cor de fundo padrão */
+    color: #333; /* Cor do texto */
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+
+/* Estilo para a aba ativa */
+.tab.active {
+    background-color: #007bff; /* Cor de fundo da aba ativa */
+    color: #fff; /* Cor do texto da aba ativa */
+}
+
+/* Estilo para o ícone da aba ativa */
+.tab i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+.tab.active {
+    background: var(--secondary-color);
+}
+
+/* Estilo para os ícones */
+
+
+/* Estilo para o hover */
+.tab:hover {
+
+    color: #000; /* Cor do texto ao passar o mouse */
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quantity-control button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.quantity-control button:hover {
+    background-color: #2980b9;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.9);
+    margin-bottom: 5px;
+}
+
+h2 {
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+label {
+    font-size: 0.9em;
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+input, select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: var(--secondary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    background: #2980b9;
+}
+
+.table-container {
+    overflow-x: auto;
+    margin-top: 0px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: var(--primary-color);
+    color: white;
+}
+
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+
+.status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.status.Pendente { background: #f39c12; color: white; }
+.status.Em-Progresso { background: #3498db; color: white; }
+.status.Concluída { background: #27ae60; color: white; }
+
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.btn-action:hover {
+    opacity: 0.8;
+}
+
+.btn-edit { background: var(--warning-color); color: white; }
+.btn-delete { background: var(--danger-color); color: white; }
+
+.alert {
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 4px;
+    display: none;
+}
+
+.editar-form {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}
+
+.alert.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .tab {
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    th, td {
+        padding: 8px;
+        font-size: 14px;
+    }
+    
+    .btn-action {
+        padding: 4px 8px;
+    }
+}

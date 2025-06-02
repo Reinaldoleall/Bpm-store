@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BPM Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6200ee;
+            --primary-dark: #3700b3;
+            --primary-light: #bb86fc;
+            --secondary-color: #03dac6;
+            --background: #f5f5f5;
+            --surface: #ffffff;
+            --error: #b00020;
+            --on-primary: #ffffff;
+            --on-secondary: #000000;
+            --on-background: #000000;
+            --on-surface: #000000;
+            --on-error: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-image: url('wall.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-container {
+            background-color: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .login-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+
+        .login-header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: rgba(0, 0, 0, 0.9);
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .input-group label {
+            position: absolute;
+            top: 16px;
+            left: 12px;
+            color: rgba(0, 0, 0, 0.9);
+            font-size: 16px;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            background-color: var(--surface);
+            padding: 0 4px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 12px;
+            border: 1px solid rgba(0, 0, 0, 0.9);
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -8px;
+            left: 8px;
+            font-size: 12px;
+            color: var(--primary-color);
+        }
+
+        .input-group input:focus + label {
+            color: var(--primary-color);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: var(--on-primary);
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .btn-login:hover {
+            background-color: var(--primary-dark);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        .btn-login:active {
+            background-color: var(--primary-dark);
+            box-shadow: none;
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.9);
+        }
+
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(0, 0, 0, 0.9);
+            cursor: pointer;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 24px;
+            }
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <img src="logo.jpg" alt="Logo BPM Store">
+            <h1>BPM Store</h1>
+            <p>Sistema de Controle Profissional</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <input type="email" id="email" name="email" placeholder=" " required>
+                <label for="email">E-mail</label>
+                <div id="emailError" class="error-message">Por favor, insira um e-mail válido</div>
+            </div>
+
+            <div class="input-group">
+                <div class="password-container">
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Senha</label>
+                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                </div>
+                <div id="passwordError" class="error-message">A senha deve ter pelo menos 6 caracteres</div>
+            </div>
+
+            <button type="submit" class="btn-login" id="loginButton">
+                <span id="buttonText">Entrar</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p>Problemas para acessar? <a href="#" id="forgotPassword">Recuperar senha</a></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (versão mais recente) -->
+    <script type="module">
+        // Importe as funções necessárias do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.1/firebase-auth.js";
+
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCviedXljI4wRv2tI3_kXJb0nFNGf--mj0",
+            authDomain: "app-estoque-manutencao.firebaseapp.com",
+            databaseURL: "https://app-estoque-manutencao-default-rtdb.firebaseio.com",
+            projectId: "app-estoque-manutencao",
+            storageBucket: "app-estoque-manutencao.appspot.com",
+            messagingSenderId: "230174452674",
+            appId: "1:230174452674:web:dc1729702c55d04d3f445b"
+        };
+
+        // Inicialize o Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Elementos do DOM
+        const loginForm = document.getElementById('loginForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const emailError = document.getElementById('emailError');
+        const passwordError = document.getElementById('passwordError');
+        const loginButton = document.getElementById('loginButton');
+        const buttonText = document.getElementById('buttonText');
+        const spinner = document.getElementById('spinner');
+        const togglePassword = document.getElementById('togglePassword');
+        const forgotPasswordLink = document.getElementById('forgotPassword');
+
+        // Mostrar/ocultar senha
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+
+        // Validação de formulário
+        function validateForm() {
+            let isValid = true;
+            
+            // Validação de e-mail
+            if (!emailInput.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value)) {
+                emailError.style.display = 'block';
+                isValid = false;
+            } else {
+                emailError.style.display = 'none';
+            }
+            
+            // Validação de senha
+            if (!passwordInput.value || passwordInput.value.length < 6) {
+                passwordError.style.display = 'block';
+                isValid = false;
+            } else {
+                passwordError.style.display = 'none';
+            }
+            
+            return isValid;
+        }
+
+        // Login com Firebase
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) return;
+            
+            // Mostrar spinner e desativar botão
+            buttonText.style.display = 'none';
+            spinner.style.display = 'block';
+            loginButton.disabled = true;
+            
+            try {
+                await signInWithEmailAndPassword(
+                    auth,
+                    emailInput.value, 
+                    passwordInput.value
+                );
+                
+                // Redirecionar para a página principal após login bem-sucedido
+                window.location.href = 'index.html';
+            } catch (error) {
+                // Tratamento de erros
+                let errorMessage = 'Erro ao fazer login';
+                
+                switch (error.code) {
+                    case 'auth/invalid-email':
+                        errorMessage = 'E-mail inválido';
+                        emailError.textContent = errorMessage;
+                        emailError.style.display = 'block';
+                        break;
+                    case 'auth/user-not-found':
+                        errorMessage = 'Usuário não encontrado';
+                        emailError.textContent = errorMessage;
+                        emailError.style.display = 'block';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Senha incorreta';
+                        passwordError.textContent = errorMessage;
+                        passwordError.style.display = 'block';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Muitas tentativas falhas. Tente novamente mais tarde.';
+                        passwordError.textContent = errorMessage;
+                        passwordError.style.display = 'block';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMessage = 'Esta conta foi desativada';
+                        emailError.textContent = errorMessage;
+                        emailError.style.display = 'block';
+                        break;
+                    default:
+                        passwordError.textContent = errorMessage + ': ' + error.message;
+                        passwordError.style.display = 'block';
+                }
+                
+                // Restaurar botão
+                buttonText.style.display = 'block';
+                spinner.style.display = 'none';
+                loginButton.disabled = false;
+            }
+        });
+
+        // Recuperação de senha
+        forgotPasswordLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            const email = prompt('Digite seu e-mail para redefinir a senha:');
+            if (email) {
+                try {
+                    await sendPasswordResetEmail(auth, email);
+                    alert('E-mail de redefinição de senha enviado! Verifique sua caixa de entrada.');
+                } catch (error) {
+                    alert('Erro ao enviar e-mail de redefinição: ' + error.message);
+                }
+            }
+        });
+
+        // Verificar estado de autenticação
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Usuário já está logado, redirecionar
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

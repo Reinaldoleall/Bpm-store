@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloco de Notas</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #f8f9fa;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .note-card {
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .note-header {
+      font-weight: bold;
+      font-size: 18px;
+      color: #333;
+    }
+    .note-content {
+      font-size: 16px;
+      color: #555;
+      margin-top: 5px;
+    }
+    .comment-icon {
+      color: #007bff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .comment-icon i {
+      margin-right: 5px;
+    }
+    .modal {
+      max-height: 80%;
+    }
+.comment-card {
+  max-width: 75%;
+  padding: 10px;
+  border-radius: 8px;
+  margin: 5px 0;
+  display: inline-block;
+}
+
+.comment-left {
+  background: #d1ecf1;
+  color: #0c5460;
+  align-self: flex-start;
+}
+
+.comment-right {
+  background: #f8d7da;
+  color: #721c24;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.comment-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+    .comment-meta {
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h4 class="center-align">Bloco de Notas</h4>
+
+    <!-- Formulário para adicionar anotação -->
+    <div class="card">
+      <div class="card-content">
+        <div class="input-field">
+          <input id="authorName" type="text">
+          <label for="authorName">Seu Nome</label>
+        </div>
+        <div class="input-field">
+          <textarea id="noteInput" class="materialize-textarea"></textarea>
+          <label for="noteInput">Digite sua anotação...</label>
+        </div>
+        <button id="saveNote" class="btn blue waves-effect waves-light">
+          Salvar Anotação
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de anotações -->
+    <div id="notesList"></div>
+  </div>
+
+  <!-- Modal de Comentários -->
+  <div id="commentsModal" class="modal">
+    <div class="modal-content">
+      <h5>Comentários</h5>
+      <div id="popupCommentsList"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn blue waves-effect" onclick="addCommentToPopup()">Adicionar Comentário</button>
+      <button class="btn grey modal-close">Fechar</button>
+    </div>
+  </div>
+
+  <!-- Firebase e Materialize JS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, arrayUnion, getDoc } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCviedXljI4wRv2tI3_kXJb0nFNGf--mj0",
+      authDomain: "app-estoque-manutencao.firebaseapp.com",
+      projectId: "app-estoque-manutencao",
+      storageBucket: "app-estoque-manutencao.appspot.com",
+      messagingSenderId: "230174452674",
+      appId: "1:230174452674:web:dc1729702c55d04d3f445b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const saveNoteButton = document.getElementById('saveNote');
+    const notesList = document.getElementById('notesList');
+    let currentNoteId = '';
+
+    // Carregar anotações
+    async function loadNotes() {
+      notesList.innerHTML = '';
+      const querySnapshot = await getDocs(collection(db, 'notes'));
+      querySnapshot.forEach((doc) => {
+        const note = doc.data();
+        const noteElement = document.createElement('div');
+        noteElement.className = 'note-card';
+        const timestamp = note.timestamp ? new Date(note.timestamp.seconds * 1000).toLocaleString() : 'Sem data';
+
+noteElement.innerHTML = `
+  <div class="note-header">${note.author} <span style="font-size: 12px; color: gray;">(${timestamp})</span></div>
+  <div class="note-content">${note.content}</div>
+  <div class="comment-icon" onclick="openPopup('${doc.id}')">
+    <i class="material-icons">comment</i>
+    <span>${note.comments?.length || 0} comentários</span>
+  </div>
+  <button class="btn red waves-effect waves-light" onclick="deleteNote('${doc.id}')">
+    <i class="material-icons">delete</i>
+  </button>
+`;
+        notesList.appendChild(noteElement);
+      });
+    }
+
+window.openPopup = async (noteId) => {
+  currentNoteId = noteId;
+  document.getElementById('popupCommentsList').innerHTML = '';
+
+  const noteRef = doc(db, 'notes', noteId);
+  const noteSnapshot = await getDoc(noteRef);
+  const noteData = noteSnapshot.data();
+  const comments = noteData?.comments || [];
+  const noteAuthor = noteData?.author || '';
+
+  comments.forEach((comment) => {
+    const isAuthor = comment.author === noteAuthor;
+    const commentClass = isAuthor ? 'comment-right' : 'comment-left';
+
+    const commentWrapper = document.createElement('div');
+    commentWrapper.className = 'comment-wrapper';
+    commentWrapper.style.justifyContent = isAuthor ? 'flex-end' : 'flex-start';
+
+    const commentElement = document.createElement('div');
+    commentElement.className = `comment-card ${commentClass}`;
+    commentElement.innerHTML = `
+      <div class="comment-meta">${comment.author} - ${new Date(comment.timestamp?.toDate()).toLocaleString()}</div>
+      <div class="comment-content">${comment.content}</div>
+    `;
+
+    commentWrapper.appendChild(commentElement);
+    document.getElementById('popupCommentsList').appendChild(commentWrapper);
+  });
+
+  // Abrir modal
+  const modalInstance = M.Modal.getInstance(document.getElementById('commentsModal'));
+  modalInstance.open();
+};
+
+    // Adicionar comentário
+    window.addCommentToPopup = async () => {
+      const commentAuthor = prompt('Digite seu nome:');
+      if (commentAuthor) {
+        const comment = prompt('Digite seu comentário:');
+        if (comment) {
+          const noteRef = doc(db, 'notes', currentNoteId);
+          await updateDoc(noteRef, {
+            comments: arrayUnion({
+              content: comment,
+              author: commentAuthor,
+              timestamp: new Date()
+            })
+          });
+          openPopup(currentNoteId);
+        }
+      }
+    };
+
+    // Deletar anotação
+    window.deleteNote = async (noteId) => {
+      if (confirm('Tem certeza que deseja deletar esta anotação?')) {
+        await deleteDoc(doc(db, 'notes', noteId));
+        loadNotes();
+      }
+    };
+
+    // Salvar nova anotação
+    saveNoteButton.addEventListener('click', async () => {
+      const author = document.getElementById('authorName').value.trim();
+      const content = document.getElementById('noteInput').value.trim();
+      if (author && content) {
+        await addDoc(collection(db, 'notes'), { author, content, timestamp: new Date(), comments: [] });
+        document.getElementById('authorName').value = '';
+        document.getElementById('noteInput').value = '';
+        loadNotes();
+      } else {
+        M.toast({html: 'Preencha todos os campos!', classes: 'red'});
+      }
+    });
+
+    // Inicializar Materialize
+    document.addEventListener('DOMContentLoaded', function() {
+      M.AutoInit();
+    });
+
+    loadNotes();
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>
